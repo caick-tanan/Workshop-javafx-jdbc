@@ -1,6 +1,7 @@
 package gui;
 
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -41,6 +42,15 @@ public class SellerListController implements Initializable, DataChangeListener {
 	private TableColumn<Seller, String> tableColumnName;
 
 	@FXML
+	private TableColumn<Seller, String> tableColumnEmail;
+	
+	@FXML
+	private TableColumn<Seller, Date> tableColumnBirthDate;
+	
+	@FXML
+	private TableColumn<Seller, Double> tableColumnBaseSalary;
+	
+	@FXML
 	private TableColumn<Seller, Seller> tableColumnEDIT;
 
 	@FXML
@@ -55,7 +65,7 @@ public class SellerListController implements Initializable, DataChangeListener {
 	public void onBtNewAction(ActionEvent event) {
 		Stage parentStage = Util.currentStage(event);
 		Seller obj = new Seller();
-		createdDialogForm(obj, "/gui/SellerForm.fxml", parentStage);
+		createDialogForm(obj, "/gui/SellerForm.fxml", parentStage);
 	}
 
 	public void setSellerService(SellerService service) {
@@ -70,6 +80,11 @@ public class SellerListController implements Initializable, DataChangeListener {
 	private void initializeNodes() {
 		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
 		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
+		tableColumnEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+		tableColumnBirthDate.setCellValueFactory(new PropertyValueFactory<>("birthDate"));
+		Util.formatTableColumnDate(tableColumnBirthDate, "dd/MM/yyyy");
+		tableColumnBaseSalary.setCellValueFactory(new PropertyValueFactory<>("baseSalary"));
+		Util.formatTableColumnDouble(tableColumnBaseSalary, 2);
 
 		Stage stage = (Stage) Main.getMainScene().getWindow();
 		tableViewSeller.prefHeightProperty().bind(stage.heightProperty());
@@ -86,7 +101,7 @@ public class SellerListController implements Initializable, DataChangeListener {
 		initRemoveButtons();
 	}
 
-	private void createdDialogForm(Seller obj, String absoluteName, Stage parentStage) {
+	private void createDialogForm(Seller obj, String absoluteName, Stage parentStage) {
 //		try {
 //			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 //			Pane pane = loader.load();
@@ -128,7 +143,7 @@ public class SellerListController implements Initializable, DataChangeListener {
 				}
 				setGraphic(button);
 				button.setOnAction(
-						event -> createdDialogForm(obj, "/gui/SellerForm.fxml", Util.currentStage(event)));
+						event -> createDialogForm(obj, "/gui/SellerForm.fxml", Util.currentStage(event)));
 			}
 		});
 	}
@@ -161,10 +176,10 @@ public class SellerListController implements Initializable, DataChangeListener {
 			try {
 				service.remove(obj);
 				updateTableView();
-			} catch (DbIntegrityException e) {
+			}
+			catch (DbIntegrityException e) {
 				Alerts.showAlert("Error removing object", null, e.getMessage(), AlertType.ERROR);
 			}
 		}
 	}
-
 }
